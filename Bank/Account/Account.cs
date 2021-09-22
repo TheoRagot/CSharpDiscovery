@@ -8,17 +8,25 @@ namespace Bank.Account
     {
         public int AccountNumber { get; } = 0 ;
         public decimal OverdraftLimit { get; set; }
-		public decimal Balance { get; } = 0 ;
+		public decimal Balance { get; private set; } = 0 ;
 		public async Task DepositAsync(decimal amount)
         {
             if(amount<0) 
             {
                 throw new UnauthorizedAccountOperationException();
+            }else
+            {
+                Balance = Balance + amount ;
             }
         }
-		public Task WithdrawAsync(decimal amount)
+		public async Task WithdrawAsync(decimal amount)
         {
-            throw new NotImplementedException();
+            if (OverdraftLimit > Balance - amount || amount < 0 )
+            {
+                throw new UnauthorizedAccountOperationException() ;
+            }
+                
+            Balance = Balance - amount ;
         }
     }
 }
